@@ -1,12 +1,15 @@
 -#  This file is app/views/movies/index.html.haml
+%head
 %h2 All Movies
 
 %table#movies.table.table-striped.col-md-12
   %thead
     %tr
-      %th Movie Title
+      %th{colName == 'title' ? {class: hilite} : {}}
+        %a#title_header{:href => movies_path({:sortBy => 'title'})} Movie Title
       %th Rating
-      %th Release Date
+      %th{colName == 'releaseDate' ? {class: hilite} : {}}
+        %a#release_date_header{:href => movies_path({:sortBy => 'releaseDate'})} Release Date
       %th More Info
   %tbody
     - @movies.each do |movie|
