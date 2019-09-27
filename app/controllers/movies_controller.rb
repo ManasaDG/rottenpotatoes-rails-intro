@@ -12,12 +12,21 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #Part1
     sortBy = params[:sortBy]
-    #render :text => id.inspect
+    ratings = params[:ratings]
+
+    if(sortBy == nil && session[:sortBy]!=nil)
+      sortBy = session[:sortBy]
+      colName = session[:sortBy]
+      redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
+    end
     if(sortBy == "title")
        @movies = Movie.all.order(:title)
+       session[:sortBy] = "title"
      elsif(sortBy == "releaseDate")
       @movies = Movie.all.order(:release_date)
+      session[:sortBy] = "releaseDate"
     else
     @movies = Movie.all
   end
@@ -26,10 +35,12 @@ class MoviesController < ApplicationController
   for r in @all_ratings
     ratings_map[r] = true
   end
+@all_ratings = ratings_map
+#############################################################
+
+  #Part 2
   #render :text => ratings_map.inspect
-  @all_ratings = ratings_map
-  #@movies = 0
-  ratings = params[:ratings]
+
   if(ratings!=nil)
    
     array = ratings.keys
@@ -41,6 +52,7 @@ class MoviesController < ApplicationController
       end
     end
     @all_ratings = ratings_map
+    session[:saved_ratings] = @all_ratings
     #render :text => @all_ratings.inspect
     for i in 0..array.length
       if(i==0)
