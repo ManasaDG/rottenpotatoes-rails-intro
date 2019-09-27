@@ -21,7 +21,40 @@ class MoviesController < ApplicationController
     else
     @movies = Movie.all
   end
+  @all_ratings = Movie.select(:rating).map(&:rating).uniq
+  ratings_map = Hash.new
+  for r in @all_ratings
+    ratings_map[r] = true
   end
+  #render :text => ratings_map.inspect
+  @all_ratings = ratings_map
+  #@movies = 0
+  ratings = params[:ratings]
+  if(ratings!=nil)
+   
+    array = ratings.keys
+     for key,value in @all_ratings
+      if array.include?(key)
+        ratings_map[key] = true
+      else
+        ratings_map[key] = false
+      end
+    end
+    @all_ratings = ratings_map
+    #render :text => @all_ratings.inspect
+    for i in 0..array.length
+      if(i==0)
+      @movies=(Movie.where(rating: array.at(i)))
+      else
+        @movies = @movies+(Movie.where(rating: array.at(i)))
+    end
+    end
+  end
+    @movies
+  end
+  #array = ratings.keys
+
+  #render :text => ratings.inspect
 
   def new
     # default: render 'new' template
@@ -39,7 +72,7 @@ class MoviesController < ApplicationController
     end
   end
 
-  def hilite()
+  def hilite
     sortBy = params[:sortBy]
     if(sortBy == 'title')
       @titleCol = 'title'
@@ -66,7 +99,7 @@ class MoviesController < ApplicationController
   end
 
   def update
-    
+    @movie = Movie.find params[:id]
     @movie.update_attributes!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully updated."
     redirect_to movie_path(@movie)
