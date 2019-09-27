@@ -13,14 +13,20 @@ class MoviesController < ApplicationController
 
   def index
     #Part1
+    
     sortBy = params[:sortBy]
     ratings = params[:ratings]
-
     if(sortBy == nil && session[:sortBy]!=nil)
       sortBy = session[:sortBy]
       colName = session[:sortBy]
-      redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
+      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
     end
+    if(ratings == nil && session[:saved_params]!=nil)
+      ratings = session[:saved_params]
+      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
+    end
+    
+    #render :text => ratings.inspect
     if(sortBy == "title")
        @movies = Movie.all.order(:title)
        session[:sortBy] = "title"
@@ -31,15 +37,20 @@ class MoviesController < ApplicationController
     @movies = Movie.all
   end
   @all_ratings = Movie.select(:rating).map(&:rating).uniq
+#render :text => ratings.inspect
+  if(ratings == nil && session[:saved_params]==nil)
   ratings_map = Hash.new
   for r in @all_ratings
     ratings_map[r] = true
   end
-@all_ratings = ratings_map
-#############################################################
 
-  #Part 2
-  #render :text => ratings_map.inspect
+else
+  ratings_map = ratings
+  #render :text => @all_ratings.inspect
+end
+@all_ratings = ratings_map
+session[:saved_params] = ratings_map
+#############################################################
 
   if(ratings!=nil)
    
@@ -51,9 +62,8 @@ class MoviesController < ApplicationController
         ratings_map[key] = false
       end
     end
+
     @all_ratings = ratings_map
-    session[:saved_ratings] = @all_ratings
-    #render :text => @all_ratings.inspect
     for i in 0..array.length
       if(i==0)
       @movies=(Movie.where(rating: array.at(i)))
@@ -64,9 +74,6 @@ class MoviesController < ApplicationController
   end
     @movies
   end
-  #array = ratings.keys
-
-  #render :text => ratings.inspect
 
   def new
     # default: render 'new' template
