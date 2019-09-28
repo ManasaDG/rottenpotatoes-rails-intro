@@ -14,30 +14,16 @@ class MoviesController < ApplicationController
   def index
     require 'logger'
     log = Logger.new('log.txt')
+    sortBy = params[:sortBy]
+    ratings = params[:ratings]
     #Part1
     #render :text => session[:saved_params].inspect
     #session.delete(:saved_params)
 
-    sortBy = params[:sortBy]
-    ratings = params[:ratings]
     flag = 0
-     if(sortBy == "title")
-       @movies = Movie.all.order(:title)
-       session[:sortBy] = "title"
-     elsif(sortBy == "releaseDate")
-      @movies = Movie.all.order(:release_date)
-      session[:sortBy] = "releaseDate"
-    else
-    @movies = Movie.all
-  end
-
+     
     @all_ratings = Movie.select(:rating).map(&:rating).uniq
-    if(sortBy == nil && session[:sortBy]!=nil)
-      sortBy = session[:sortBy]
-      colName = session[:sortBy]
-      flag = 1
-      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
-    end
+   
 
      if(ratings==nil && session[:saved_params]==nil)
       temp = Hash.new
@@ -90,7 +76,21 @@ class MoviesController < ApplicationController
         end
     end
 
-  
+    if(sortBy == "title")
+       session[:sortBy] = "title"
+     elsif(sortBy == "release_date")
+      session[:sortBy] = "release_date"
+  end
+
+   if(sortBy == nil && session[:sortBy]!=nil)
+      sortBy = session[:sortBy]
+      colName = session[:sortBy]
+      flag = 1
+      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => @all_ratings)
+    end
+#render :text => Movie.where(rating: array.at(1)).inspect
+#render :text => Movie.where("rating in (?)", @all_ratings.keys).order(sortBy).inspect
+ @movies = Movie.where("rating in (?)", array).order(sortBy)
  @movies
   end
 
@@ -103,8 +103,8 @@ class MoviesController < ApplicationController
     if(sortBy == 'title')
       'title'
       
-    elsif(sortBy == 'releaseDate')
-      'releaseDate'
+    elsif(sortBy == 'release_date')
+      'release_date'
     else
       nil
     end
@@ -116,8 +116,8 @@ class MoviesController < ApplicationController
       @titleCol = 'title'
       'hilite'
       
-    elsif(sortBy == 'releaseDate')
-      @dateCol = 'releaseDate'
+    elsif(sortBy == 'release_date')
+      @dateCol = 'release_date'
        'hilite'
     else
       ''

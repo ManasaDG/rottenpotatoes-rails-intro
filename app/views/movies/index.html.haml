@@ -13,8 +13,8 @@
       %th{colName == 'title' ? {class: hilite} : {}}
         %a#title_header{:href => movies_path({:sortBy => 'title'})} Movie Title
       %th Rating
-      %th{colName == 'releaseDate' ? {class: hilite} : {}}
-        %a#release_date_header{:href => movies_path({:sortBy => 'releaseDate'})} Release Date
+      %th{colName == 'release_date' ? {class: hilite} : {}}
+        %a#release_date_header{:href => movies_path({:sortBy => 'release_date'})} Release Date
       %th More Info
   %tbody
     - @movies.each do |movie|
