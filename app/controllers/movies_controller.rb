@@ -12,22 +12,16 @@ class MoviesController < ApplicationController
   end
 
   def index
+    require 'logger'
+    log = Logger.new('log.txt')
     #Part1
-    
+    #render :text => session[:saved_params].inspect
+    #session.delete(:saved_params)
+
     sortBy = params[:sortBy]
     ratings = params[:ratings]
-    if(sortBy == nil && session[:sortBy]!=nil)
-      sortBy = session[:sortBy]
-      colName = session[:sortBy]
-      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
-    end
-    if(ratings == nil && session[:saved_params]!=nil)
-      ratings = session[:saved_params]
-      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
-    end
-    
-    #render :text => ratings.inspect
-    if(sortBy == "title")
+    flag = 0
+     if(sortBy == "title")
        @movies = Movie.all.order(:title)
        session[:sortBy] = "title"
      elsif(sortBy == "releaseDate")
@@ -36,43 +30,68 @@ class MoviesController < ApplicationController
     else
     @movies = Movie.all
   end
-  @all_ratings = Movie.select(:rating).map(&:rating).uniq
-#render :text => ratings.inspect
-  if(ratings == nil && session[:saved_params]==nil)
-  ratings_map = Hash.new
-  for r in @all_ratings
-    ratings_map[r] = true
-  end
 
-else
-  ratings_map = ratings
-  #render :text => @all_ratings.inspect
-end
-@all_ratings = ratings_map
-session[:saved_params] = ratings_map
-#############################################################
+    @all_ratings = Movie.select(:rating).map(&:rating).uniq
+    if(sortBy == nil && session[:sortBy]!=nil)
+      sortBy = session[:sortBy]
+      colName = session[:sortBy]
+      flag = 1
+      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => ratings)
+    end
 
-  if(ratings!=nil)
-   
-    array = ratings.keys
-     for key,value in @all_ratings
-      if array.include?(key)
-        ratings_map[key] = true
-      else
-        ratings_map[key] = false
+     if(ratings==nil && session[:saved_params]==nil)
+      temp = Hash.new
+      #render :text => session[:saved_params].inspect
+      for i in 1..@all_ratings.length
+          temp[@all_ratings[i-1]] = true
       end
+      @all_ratings = temp
+      session[:saved_params] = temp
     end
 
-    @all_ratings = ratings_map
+
+    if(ratings!=nil)
+      
+      temp = Hash.new
+      #render :text => session[:saved_params].inspect
+      for i in 0..@all_ratings.length-1
+        if ratings.key?(@all_ratings[i]) == true
+          temp[@all_ratings[i]] = true
+        else
+          temp[@all_ratings[i]] = false
+        end
+      end
+      ratings = temp
+      session[:saved_params] = ratings
+      @all_ratings  = ratings
+    end
+
+    if(ratings==nil && session[:saved_params] !=nil)
+      #render :text => session[:saved_params].inspect
+      @all_ratings  = session[:saved_params]
+      flag = 1
+    end
+
+    if(session[:saved_params] ==nil)
+      temp = Hash.new
+      #render :text => session[:saved_params].inspect
+      for i in 1..@all_ratings.length
+          temp[@all_ratings[i-1]] = true
+      end
+      @all_ratings = temp
+    end
+
+    array = @all_ratings.map {|k,v| k if v==true} - [nil]
     for i in 0..array.length
-      if(i==0)
-      @movies=(Movie.where(rating: array.at(i)))
-      else
-        @movies = @movies+(Movie.where(rating: array.at(i)))
+          if(i==0)
+          @movies=(Movie.where(rating: array.at(i)))
+          else
+            @movies = @movies+(Movie.where(rating: array.at(i)))
+        end
     end
-    end
-  end
-    @movies
+
+  
+ @movies
   end
 
   def new
