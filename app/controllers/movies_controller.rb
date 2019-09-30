@@ -25,11 +25,11 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.select(:rating).map(&:rating).uniq
 
 
-    if(ratings==nil && session[:saved_params]==nil)
+    if(ratings==nil && session[:saved_params]!=nil)
       flag = 1
     end
 
-    if(sortBy==nil && session[:sortBy]==nil)
+    if(sortBy==nil && session[:sortBy]!=nil)
       flag=1
     end
 
@@ -96,13 +96,15 @@ class MoviesController < ApplicationController
       
       #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => @all_ratings)
     end
+    #render :text => @all_ratings
     if(flag==1)
       #render :text => @all_ratings
-      #session[:saved_params] = @all_ratings
+      #render :text => @all_ratings
+      @all_ratings.reject! {|k,v| v == false}
+      #render :text => @all_ratings
+      session[:saved_params] = @all_ratings
       redirect_to movies_path({:sortBy => sortBy,:ratings => @all_ratings})
     end
-#render :text => Movie.where(rating: array.at(1)).inspect
-#render :text => Movie.where("rating in (?)", @all_ratings.keys).order(sortBy).inspect
  @movies = Movie.where("rating in (?)", array).order(sortBy)
 
  @movies
