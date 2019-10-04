@@ -1,0 +1,9 @@
+D, [2019-09-27T20:10:06.964217 #98524] DEBUG -- : {"G"=>true, "R"=>true, "PG-13"=>true, "PG"=>true, nil=>false}
+D, [2019-09-27T20:15:13.617973 #98524] DEBUG -- : {"R"=>true, "PG-13"=>true, "PG"=>true, nil=>false}
+D, [2019-09-27T20:15:53.714103 #98524] DEBUG -- : {"R"=>true, "PG-13"=>true, "PG"=>true, nil=>false}
+D, [2019-09-27T20:16:08.921928 #98524] DEBUG -- : {"R"=>false, "PG-13"=>false, "PG"=>false}
+D, [2019-09-27T20:18:46.546573 #98524] DEBUG -- : {"G"=>true, "R"=>true, "PG-13"=>true, "PG"=>true}
+D, [2019-09-27T20:18:50.280054 #98524] DEBUG -- : {"G"=>false, "R"=>false, "PG-13"=>false, "PG"=>false}
+D, [2019-09-27T20:18:57.456165 #98524] DEBUG -- : {"G"=>false, "R"=>false, "PG-13"=>false, "PG"=>false}
+D, [2019-09-27T20:19:12.267213 #98524] DEBUG -- : {"G"=>true, "R"=>true, "PG-13"=>true, "PG"=>true}
+D, [2019-09-27T20:19:12.580140 #98524] DEBUG -- : {"G"=>false, "R"=>false, "PG-13"=>false, "PG"=>false}
