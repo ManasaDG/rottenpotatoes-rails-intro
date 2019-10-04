@@ -16,26 +16,26 @@ class MoviesController < ApplicationController
     log = Logger.new('log.txt')
     sortBy = params[:sortBy]
     ratings = params[:ratings]
-    #Part1
-    #render :text => session[:saved_params].inspect
-    #session.delete(:saved_params)
 
     flag = 0
-     
+    
+    #Retrieve all ratings from DB
     @all_ratings = Movie.select(:rating).map(&:rating).uniq
 
-
+    #Condition for redirect for ratings
     if(ratings==nil && session[:saved_params]!=nil)
       flag = 1
     end
 
+    #Condition for redirect for order
     if(sortBy==nil && session[:sortBy]!=nil)
       flag=1
     end
 
+
+     #No session params for ratings, check all ratings
      if(ratings==nil && session[:saved_params]==nil)
       temp = Hash.new
-      #render :text => session[:saved_params].inspect
       for i in 1..@all_ratings.length
           temp[@all_ratings[i-1]] = true
       end
@@ -43,7 +43,7 @@ class MoviesController < ApplicationController
       session[:saved_params] = temp
     end
 
-
+    #Ratings passed through url params, update session params
     if(ratings!=nil)
       
       temp = Hash.new
@@ -56,25 +56,25 @@ class MoviesController < ApplicationController
         end
       end
       ratings = temp
-      #render :text => ratings.inspect
       session[:saved_params] = ratings
       @all_ratings  = ratings
     end
 
+    #No url params, update ratings to session params
     if(ratings==nil && session[:saved_params] !=nil)
-      #render :text => session[:saved_params].inspect
       @all_ratings  = session[:saved_params]
     end
 
     if(session[:saved_params] ==nil)
       temp = Hash.new
-      #render :text => session[:saved_params].inspect
       for i in 1..@all_ratings.length
           temp[@all_ratings[i-1]] = true
       end
       @all_ratings = temp
     end
 
+    #Get ratings which need to be checked (value==true)
+    #Filter movies based on ratings selected
     array = @all_ratings.map {|k,v| k if v==true} - [nil]
     for i in 0..array.length
           if(i==0)
@@ -84,6 +84,7 @@ class MoviesController < ApplicationController
         end
     end
 
+    #Setting Ordering parameters
     if(sortBy == "title")
        session[:sortBy] = "title"
      elsif(sortBy == "release_date")
@@ -93,18 +94,17 @@ class MoviesController < ApplicationController
    if(sortBy == nil && session[:sortBy]!=nil)
       sortBy = session[:sortBy]
       colName = session[:sortBy]
-      
-      #redirect_to movies_path(:sortBy => session[:sortBy],:ratings => @all_ratings)
     end
-    #render :text => @all_ratings
+
+    #Redirect if needed
     if(flag==1)
-      #render :text => @all_ratings
-      #render :text => @all_ratings
       @all_ratings.reject! {|k,v| v == false}
-      #render :text => @all_ratings
       session[:saved_params] = @all_ratings
+      flash.keep
       redirect_to movies_path({:sortBy => sortBy,:ratings => @all_ratings})
     end
+
+    #Apply Ordering and Filtering to movies and return
  @movies = Movie.where("rating in (?)", array).order(sortBy)
 
  @movies
@@ -115,6 +115,7 @@ class MoviesController < ApplicationController
   end
 
   def colName()
+    #Toggle class for column based sorting
     sortBy = params[:sortBy]
     if(sortBy == 'title')
       'title'
@@ -127,6 +128,7 @@ class MoviesController < ApplicationController
   end
 
   def hilite
+    #Apply class to column based sorting
     sortBy = params[:sortBy]
     if(sortBy == 'title')
       @titleCol = 'title'
