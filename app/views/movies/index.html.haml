@@ -4,7 +4,7 @@
   Include:
   - @all_ratings.each do |key, value|
     = "#{key}"
-    = check_box_tag "ratings[#{key}]",value, value
+    = check_box_tag "ratings[#{key}]",value, value , :id  => "ratings_#{key}"
   = submit_tag 'Refresh', :id => 'ratings_submit'
 %h2 All Movies
 %table#movies.table.table-striped.col-md-12
